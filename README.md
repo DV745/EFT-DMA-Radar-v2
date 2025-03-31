@@ -1,6 +1,15 @@
 
 # EFT-DMA-Radar-v2
 
+## Known issues and General Notice
+* Upon exiting the BTR the player's position is stuck inside the BTR, restarting the radar fixes it.
+* Entities (AI and players) can sometimes be shown at 0,0 coords at raid start or during a raid, restarting the radar fixes it.
+* Tripwires aren't being displayed on PVP mode.
+
+This fork aims to keep this radar functional for future tarkov updates since the original developer dropped support, I will try my best but keep in mind I am not really good at this :-)
+
+When the radar has been compiled, copy my Configuration folder and drop it inside the debug folder where the .exe is, overwrite if asked.
+
 ## Description
 EFT DMA Radar is a radar tool designed for Escape from Tarkov that provides real-time tracking of players and items on a 2D map.
 
