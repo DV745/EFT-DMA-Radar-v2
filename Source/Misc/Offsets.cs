@@ -121,13 +121,13 @@
         public const uint MovementContext = 0x58; // [58] <MovementContext>k__BackingField : EFT.MovementContext
         public const uint PlayerBody = 0xC0; // [C0] _playerBody : EFT.PlayerBody
         public const uint ProceduralWeaponAnimation = 0x1E0; // [1E0] <ProceduralWeaponAnimation>k__BackingField : EFT.Animations.ProceduralWeaponAnimation
-        public const uint Corpse = 0x3D8; // [3D8] Corpse : EFT.Interactive.Corpse
-        public const uint Location = 0x5C8; // [5C8] <Location>k__BackingField : String
-        public const uint Profile = 0x600; // [600] <Profile>k__BackingField : EFT.Profile
-        public const uint Physical = 0x610; // [610] Physical : -.GClass07FA
-        public const uint HealthController = 0x640; // [640] _healthController : EFT.HealthSystem.IHealthController
-        public const uint InventoryController = 0x658; // [658] _inventoryController : -.Player.PlayerInventoryController
-        public const uint HandsController = 0x660; // [660] _handsController : -.Player.AbstractHandsController
+        public const uint Corpse = 0x3E0; // [3D8] Corpse : EFT.Interactive.Corpse
+        public const uint Location = 0x5D0; // [5C8] <Location>k__BackingField : String
+        public const uint Profile = 0x608; // [600] <Profile>k__BackingField : EFT.Profile
+        public const uint Physical = 0x618; // [610] Physical : -.GClass07FA
+        public const uint HealthController = 0x648; // [640] _healthController : EFT.HealthSystem.IHealthController
+        public const uint InventoryController = 0x660; // [658] _inventoryController : -.Player.PlayerInventoryController
+        public const uint HandsController = 0x668; // [660] _handsController : -.Player.AbstractHandsController
         public const uint IsExtracting = 0x9A2; // [9A2] <ExitTriggerZone>k__BackingField : Boolean
     }
 
@@ -180,7 +180,7 @@
 
     public struct InventoryController // -.Player.PlayerInventoryController
     {
-        public const uint Inventory = 0x118; // [118] <Inventory>k__BackingField : EFT.InventoryLogic.Inventory
+        public const uint Inventory = 0x120; // [118] <Inventory>k__BackingField : EFT.InventoryLogic.Inventory
     }
 
     public struct Inventory
@@ -446,8 +446,8 @@
 
     public struct LootableContainer
     {
-        public const uint ItemOwner = 0x130; // [130] ItemOwner : -.GClass29EB
-        public const uint Template = 0x138; // [138] Template : String
+        public const uint ItemOwner = 0x148; // [130] ItemOwner : -.GClass29EB
+        public const uint Template = 0x150; // [138] Template : String
     }
 
     public struct ObservedLootItem

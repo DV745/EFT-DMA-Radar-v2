@@ -77,6 +77,7 @@ namespace eft_dma_radar
                     "RezervBase" => "Reserve",
                     "TarkovStreets" => "Streets of Tarkov",
                     "laboratory" => "The Lab",
+		            "labyrinth" => "The Labyrinth",
                     "Sandbox" or "Sandbox_high" => "Ground Zero",
                     _ => name
                 };

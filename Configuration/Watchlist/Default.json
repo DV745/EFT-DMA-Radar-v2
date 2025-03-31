@@ -1,0 +1,12 @@
+{
+  "Name": "Default",
+  "Entries": [
+    {
+      "AccountID": "New Entry",
+      "Tag": "n/a",
+      "IsStreamer": false,
+      "Platform": 0,
+      "PlatformUsername": "n/a"
+    }
+  ]
+}

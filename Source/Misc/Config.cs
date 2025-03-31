@@ -12,6 +12,9 @@ namespace eft_dma_radar
         [JsonPropertyName("chams")]
         public Dictionary<string, bool> Chams { get; set; }
 
+        [JsonPropertyName("aimviewFOV")]
+        public float AimViewFOV { get; set; }
+
         [JsonPropertyName("defaultZoom")]
         public int DefaultZoom { get; set; }
 
@@ -308,7 +311,8 @@ namespace eft_dma_radar
             ["Shoreline"] = 30,
             ["Streets of Tarkov"] = 30,
             ["The Lab"] = 30,
-            ["Woods"] = 30
+            ["Woods"] = 30,
+            ["The Labyrinth"] = 30
         };
 
         [JsonIgnore]
@@ -476,6 +480,7 @@ namespace eft_dma_radar
 
         public Config()
         {
+            AimViewFOV = 30;
             AimviewSettings = DefaultAimviewSettings;
             Chams = DefaultChamsSettings;
             DefaultZoom = 100;

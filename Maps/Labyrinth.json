@@ -1,0 +1,14 @@
+{
+  "mapID": [
+    "labyrinth"
+  ],
+  "x": 2039,
+  "y": 2585,
+  "scale": 33,
+  "mapLayers": [
+    {
+      "minHeight": -100,
+      "filename": "Maps\\Labyrinth.jpg"
+    }
+  ]
+}

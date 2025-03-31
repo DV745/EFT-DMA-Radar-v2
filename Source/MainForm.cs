@@ -48,6 +48,7 @@ namespace eft_dma_radar
 
         private bool isFreeMapToggled = false;
         private float uiScale = 1.0f;
+        private float aimviewWindowSize = 300;
         private Player closestPlayerToMouse = null;
         private LootableObject closestItemToMouse = null;
         private QuestItem closestTaskItemToMouse = null;
@@ -477,6 +478,8 @@ namespace eft_dma_radar
             SKPaints.PaintExfilPending.StrokeWidth = 1 * this.uiScale;
             SKPaints.PaintExfilClosed.StrokeWidth = 1 * this.uiScale;
             #endregion
+
+            this.aimviewWindowSize = 300 * this.uiScale;
 
             this.InitializeFontSizes();
         }
@@ -1973,14 +1976,44 @@ namespace eft_dma_radar
             if (!aimviewPlayers.Any())
                 return;
 
-            //var primaryTeammateAimviewBounds = this.CalculateAimviewBounds(mcRadarStats.Visible || mcRadarEnemyStats.Visible, mcRadarStats);
-
-            //var primaryTeammate = this.AllPlayers?
-            //    .Select(x => x.Value)
-            //    .FirstOrDefault(x => x.AccountID == txtTeammateID.Text);
-
             this.RenderAimview(canvas, this.LocalPlayer, aimviewPlayers);
-            //this.RenderAimview(canvas, primaryTeammateAimviewBounds, primaryTeammate, aimviewPlayers);
+
+            //Teammate Aimview code
+
+            var primaryTeammate = this.AllPlayers?
+                .Select(x => x.Value)
+                .FirstOrDefault(x => x.AccountID == txtTeammateID.Text);
+
+            var aimviewPlayersTeammate = this.AllPlayers?
+                .Select(x => x.Value)
+                .Where(x => x.IsActive && x.IsAlive);
+
+            if (aimviewPlayers is not null)
+            {
+                var isRadarStatsVisible = mcRadarStats.Visible || mcRadarEnemyStats.Visible;
+                var primaryTeammateAimviewBoundsX = mcRadarStats.Location.X - mcRadarStats.Width;
+                var primaryTeammateAimviewBoundsY = mcRadarStats.Location.Y - aimviewWindowSize - 5;
+
+                var primaryTeammateAimviewBounds = new SKRect()
+                {
+                    Left = (isRadarStatsVisible ? primaryTeammateAimviewBoundsX - 70 : mapCanvas.Right - aimviewWindowSize),
+                    Right = (isRadarStatsVisible ? primaryTeammateAimviewBoundsX + aimviewWindowSize - 70 : mapCanvas.Right),
+                    Bottom = (isRadarStatsVisible ? primaryTeammateAimviewBoundsY + aimviewWindowSize : mapCanvas.Bottom),
+                    Top = (isRadarStatsVisible ? primaryTeammateAimviewBoundsY : mapCanvas.Bottom - aimviewWindowSize)
+                };
+
+                RenderAimviewTeammate(canvas, primaryTeammateAimviewBounds, primaryTeammate, aimviewPlayersTeammate);
+            }
+        }
+
+        private SKRect CalculateAimviewBounds(bool isVisible, Control control)
+        {
+            float left = isVisible ? control.Location.X : this.mapCanvas.Left;
+            float right = left + this.aimviewWindowSize;
+            float bottom = isVisible ? control.Location.Y - this.aimviewWindowSize - 5 + this.aimviewWindowSize : this.mapCanvas.Bottom;
+            float top = bottom - this.aimviewWindowSize;
+
+            return new SKRect(left, top, right, bottom);
         }
 
         private void DrawToolTips(SKCanvas canvas)
@@ -2092,6 +2125,139 @@ namespace eft_dma_radar
                    pos.X <= bounds.Right &&
                    pos.Y >= bounds.Top &&
                    pos.Y <= bounds.Bottom;
+        }
+
+        private void RenderAimviewTeammate(SKCanvas canvas, SKRect drawingLocation, Player sourcePlayer, IEnumerable<Player> aimviewPlayers)
+        {
+            if (sourcePlayer is null || !sourcePlayer.IsActive || !sourcePlayer.IsAlive)
+                return;
+
+            canvas.DrawRect(drawingLocation, SKPaints.PaintTransparentBacker); // draw backer
+
+            var myPosition = sourcePlayer.Position;
+            var myRotation = sourcePlayer.Rotation;
+            var normalizedDirection = this.NormalizeDirection(myRotation.X);
+            var pitch = this.CalculatePitch(myRotation.Y);
+
+            this.DrawCrosshairTeammate(canvas, drawingLocation);
+
+            if (aimviewPlayers is not null)
+            {
+                foreach (var player in aimviewPlayers)
+                {
+                    if (player == sourcePlayer)
+                        continue; // don't draw self
+
+                    if (this.ShouldDrawPlayer(myPosition, player.Position, this.config.MaxDistance))
+                        this.DrawPlayerTeammate(canvas, drawingLocation, myPosition, player, normalizedDirection, pitch);
+                }
+            }
+        }
+
+        private void DrawPlayerTeammate(SKCanvas canvas, SKRect drawingLocation, Vector3 myPosition, Player player, float normalizedDirection, float pitch)
+        {
+            var playerPos = player.Position;
+            float dist = Vector3.Distance(myPosition, playerPos);
+            float heightDiff = playerPos.Y - myPosition.Y;
+            float angleY = this.CalculateAngleY(heightDiff, dist, pitch);
+            float y = this.CalculateYPosition(angleY, this.aimviewWindowSize);
+
+            float opposite = playerPos.Z - myPosition.Z;
+            float adjacent = playerPos.X - myPosition.X;
+            float angleX = this.CalculateAngleX(opposite, adjacent, normalizedDirection);
+            float x = this.CalculateXPosition(angleX, this.aimviewWindowSize);
+
+            float drawX = drawingLocation.Right - x;
+            float drawY = drawingLocation.Bottom - y;
+
+            if (this.IsInFOV(drawX, drawY, drawingLocation))
+            {
+                float circleSize = this.CalculateCircleSize(dist);
+                canvas.DrawCircle(drawX, drawY, circleSize * this.uiScale, player.GetAimviewPaint());
+            }
+        }
+
+        private float CalculateAngleY(float heightDiff, float dist, float pitch)
+        {
+            return (float)(180 / Math.PI * Math.Atan(heightDiff / dist)) - pitch;
+        }
+
+        private float CalculateYPosition(float angleY, float windowSize)
+        {
+            return angleY / this.config.AimViewFOV * windowSize + windowSize / 2;
+        }
+
+        private float CalculateAngleX(float opposite, float adjacent, float normalizedDirection)
+        {
+            float angleX = (float)(180 / Math.PI * Math.Atan(opposite / adjacent));
+
+            if (adjacent < 0 && opposite > 0)
+                angleX += 180;
+            else if (adjacent < 0 && opposite < 0)
+                angleX += 180;
+            else if (adjacent > 0 && opposite < 0)
+                angleX += 360;
+
+            this.HandleSplitPlanes(ref angleX, normalizedDirection);
+
+            angleX -= normalizedDirection;
+            return angleX;
+        }
+
+        private void HandleSplitPlanes(ref float angleX, float normalizedDirection)
+        {
+            if (angleX >= 360 - this.config.AimViewFOV && normalizedDirection <= this.config.AimViewFOV)
+            {
+                var diff = 360 + normalizedDirection;
+                angleX -= diff;
+            }
+            else if (angleX <= this.config.AimViewFOV && normalizedDirection >= 360 - this.config.AimViewFOV)
+            {
+                var diff = 360 - normalizedDirection;
+                angleX += diff;
+            }
+        }
+
+        private float CalculateXPosition(float angleX, float windowSize)
+        {
+            return angleX / this.config.AimViewFOV * windowSize + windowSize / 2;
+        }
+
+        private float CalculateCircleSize(float dist)
+        {
+            return (float)(31.6437 - 5.09664 * Math.Log(0.591394 * dist + 70.0756));
+        }
+
+        private bool IsInFOV(float drawX, float drawY, SKRect drawingLocation)
+        {
+            return drawX < drawingLocation.Right
+                   && drawX > drawingLocation.Left
+                   && drawY > drawingLocation.Top
+                   && drawY < drawingLocation.Bottom;
+        }
+
+        private float CalculatePitch(float pitch)
+        {
+            if (pitch >= 270)
+                return 360 - pitch;
+            else
+                return -pitch;
+        }
+
+        private float NormalizeDirection(float direction)
+        {
+            var normalizedDirection = -direction;
+
+            if (normalizedDirection < 0)
+                normalizedDirection += 360;
+
+            return normalizedDirection;
+        }
+
+        private bool ShouldDrawPlayer(Vector3 myPosition, Vector3 playerPosition, float maxDistance)
+        {
+            var dist = Vector3.Distance(myPosition, playerPosition);
+            return dist <= maxDistance;
         }
 
         private void RenderAimview(SKCanvas canvas, Player sourcePlayer, IEnumerable<Player> aimviewPlayers)
@@ -2341,6 +2507,25 @@ namespace eft_dma_radar
                 drawingLocation.Right - (this.config.AimviewSettings.Width / 2),
                 drawingLocation.Top,
                 drawingLocation.Right - (this.config.AimviewSettings.Width / 2),
+                drawingLocation.Bottom,
+                SKPaints.PaintAimviewCrosshair
+            );
+        }
+
+        private void DrawCrosshairTeammate(SKCanvas canvas, SKRect drawingLocation)
+        {
+            canvas.DrawLine(
+                drawingLocation.Left,
+                drawingLocation.Bottom - (this.aimviewWindowSize / 2),
+                drawingLocation.Right,
+                drawingLocation.Bottom - (this.aimviewWindowSize / 2),
+                SKPaints.PaintAimviewCrosshair
+            );
+
+            canvas.DrawLine(
+                drawingLocation.Right - (this.aimviewWindowSize / 2),
+                drawingLocation.Top,
+                drawingLocation.Right - (this.aimviewWindowSize / 2),
                 drawingLocation.Bottom,
                 SKPaints.PaintAimviewCrosshair
             );
@@ -2639,7 +2824,7 @@ namespace eft_dma_radar
 
         private float CalculateFontSize(float dist, bool smallerFont = false)
         {
-            var baseSize = 16f;
+            var baseSize = 40f;
             var scale = 1f - (dist / 150f);
             scale = Math.Max(0.4f, Math.Min(1f, scale));
 
@@ -2657,7 +2842,7 @@ namespace eft_dma_radar
 
         private float CalculateObjectSize(float dist, bool smallerObject = false)
         {
-            var baseSize = 20f;
+            var baseSize = 60f;
             var scale = 1f - (dist / 150f);
             scale = Math.Max(0.3f, Math.Min(1f, scale));
 
