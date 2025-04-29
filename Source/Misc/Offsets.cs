@@ -302,7 +302,7 @@
 
     public struct FirearmController
     {
-        public const uint WeaponLn = 0x184; // [184] WeaponLn : Single
+        public const uint WeaponLn = 0x18C; // [184] WeaponLn : Single
     }
 
     public struct HandsController
