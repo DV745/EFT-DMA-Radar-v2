@@ -122,12 +122,12 @@
         public const uint PlayerBody = 0xC0; // [C0] _playerBody : EFT.PlayerBody
         public const uint ProceduralWeaponAnimation = 0x1E0; // [1E0] <ProceduralWeaponAnimation>k__BackingField : EFT.Animations.ProceduralWeaponAnimation
         public const uint Corpse = 0x3E0; // [3D8] Corpse : EFT.Interactive.Corpse
-        public const uint Location = 0x5D0; // [5C8] <Location>k__BackingField : String
-        public const uint Profile = 0x608; // [600] <Profile>k__BackingField : EFT.Profile
-        public const uint Physical = 0x618; // [610] Physical : -.GClass07FA
-        public const uint HealthController = 0x648; // [640] _healthController : EFT.HealthSystem.IHealthController
-        public const uint InventoryController = 0x660; // [658] _inventoryController : -.Player.PlayerInventoryController
-        public const uint HandsController = 0x668; // [660] _handsController : -.Player.AbstractHandsController
+        public const uint Location = 0x5D8; // [5C8] <Location>k__BackingField : String
+        public const uint Profile = 0x610; // [600] <Profile>k__BackingField : EFT.Profile
+        public const uint Physical = 0x620; // [610] Physical : -.GClass07FA
+        public const uint HealthController = 0x650; // [640] _healthController : EFT.HealthSystem.IHealthController
+        public const uint InventoryController = 0x668; // [658] _inventoryController : -.Player.PlayerInventoryController
+        public const uint HandsController = 0x670; // [660] _handsController : -.Player.AbstractHandsController
         public const uint IsExtracting = 0x9A2; // [9A2] <ExitTriggerZone>k__BackingField : Boolean
     }
 
@@ -150,7 +150,7 @@
         public const uint ObservedPlayerController = 0x88; // [88] gClass24AC_0x88 : -.GClass24AC
         public const uint VoiceName = 0x98; // [98] string_0x98 : String
         public const uint PlayerSide = 0x100; // [100] int32_0x100 : System.Int32
-        public const uint IsAI = 0x110; // [110] boolean_0x110 : Boolean
+        public const uint IsAI = 0x111; // [110] boolean_0x110 : Boolean
         public static readonly uint[] To_MovementContext = new uint[] { ObservedPlayerController, 0xC8, 0x10 }; // to MovementContext
         public static readonly uint[] To_TransformInternal = new uint[] { PlayerBody, 0x30, 0x30, 0x10, 0x20, 0x10 }; // to TransformInternal
         public static readonly uint[] To_InventoryController = new uint[] { ObservedPlayerController, 0x118 }; // to InventoryController
