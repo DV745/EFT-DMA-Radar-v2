@@ -494,22 +494,30 @@ namespace eft_dma_radar
 
         public static int GetItemValue(TarkovItem item)
         {
+            //2025-07-10 changes will need to be reverted when hardcore wipe ends
             var bestPrice = item.avg24hPrice ?? 0;
             var useTraderPrices = Program.Config.TraderPrices;
 
-            foreach (var vendor in item.sellFor)
+            if (useTraderPrices)
             {
-                var isFleaMarket = vendor.vendor.normalizedName.Equals("flea-market", StringComparison.OrdinalIgnoreCase);
-                if (vendor.price > bestPrice)
-                {
-                    if (useTraderPrices && isFleaMarket)
-                        continue;
-
-                    bestPrice = vendor.price;
-                }
+                return item.sellFor.FirstOrDefault()?.price ?? 0;
             }
+            else
+            {
+                foreach (var vendor in item.sellFor)
+                {
+                    var isFleaMarket = vendor.vendor.normalizedName.Equals("flea-market", StringComparison.OrdinalIgnoreCase);
+                    if (vendor.price > bestPrice)
+                    {
+                        //if (useTraderPrices && isFleaMarket)
+                        //    continue;
 
-            return bestPrice;
+                        bestPrice = vendor.price;
+                    }
+                }
+
+                return bestPrice;
+            }
         }
         #endregion
     }
