@@ -403,11 +403,11 @@
         public const uint EntryPoint = 0x18; // [18] EntryPoint : String
         public const uint GroupId = 0x28; // [28] GroupId : String
         public const uint GameVersion = 0x38; // [38] GameVersion : String
-        public const uint Settings = 0x50; // [50] gClass18EA_0x50 : -.GClass18EA
+        public const uint Settings = 0x48; // [50] gClass18EA_0x50 : -.GClass18EA
         //public const uint PlayerSide = 0x70; // [70] Side : System.Int32
-        public const uint PlayerSide = 0x90; // [90] int32_0x90 : System.Int32
-        public const uint RegistrationDate = 0x94; // [94] RegistrationDate : Int32
-        public const uint MemberCategory = 0xA0; // [A0] MemberCategory : System.Int32
+        public const uint PlayerSide = 0x88; // [90] int32_0x90 : System.Int32
+        public const uint RegistrationDate = 0x8C; // [94] RegistrationDate : Int32
+        public const uint MemberCategory = 0x98; // [A0] MemberCategory : System.Int32
     }
 
     public struct ExfiltrationPoint
